@@ -1,0 +1,23 @@
+{
+  "name": "ng-magnify",
+  "version": "0.0.1",
+  "homepage": "https://github.com/yonathanhalim/ng-magnify",
+  "authors": [
+    "Yonathan Halim <jotielim@gmail.com>"
+  ],
+  "description": "AngularJS directive for simple image magnification",
+  "keywords": [
+    "magnify"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.2.4"
+  }
+}
