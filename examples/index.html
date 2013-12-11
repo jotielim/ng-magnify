@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html data-ng-app="demoapp">
+<head>
+  <link rel="stylesheet" href="css/ng-magnify.css"/>
+</head>
+<body>
+  <p>Demo app</p>
+
+  <div data-ng-controller="ExampleCtrl">
+    <div data-ng-magnify
+        data-image-width="400"
+        data-image-height="600"
+        data-glass-width="500"
+        data-glass-height="500"
+        data-image-src="img/nexus5.jpg"
+    ></div>
+  </div>
+
+  <script src="angular/angular.min.js"></script>
+  <script src="js/ng-magnify.js"></script>
+  <script>
+  var app = angular.module('demoapp', ['ngMagnifyModule']);
+
+  app.controller('ExampleCtrl', ['$scope', function ($scope) {
+    
+  }]);
+  </script>
+</body>
+</html>

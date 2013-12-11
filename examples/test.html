@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+  <style>
+  .expander {
+    border: 1px solid black;
+    width: 250px;
+  }
+  .expander > .title {
+    background-color: black;
+    color: white;
+    padding: .1em .3em;
+    cursor: pointer;
+  }
+  .expander > .body {
+    padding: .1em .3em;
+  }
+  </style>
+</head>
+<body>
+<div ng-controller='SomeController'>
+ <expander class='expander' expander-title='title'>
+ {{text}}
+ </expander>
+</div>
+
+  <script src="angular/angular.min.js"></script>
+  <!--
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
+  -->
+<script>
+var myapp = angular.module('myApp', ['expanderModule']);
+
+myapp.controller('SomeController', function ($scope) {
+  $scope.title = 'Click me to expand';
+  $scope.text = 'Hi there folks, I am the content '
+    + 'that was hidden but is now shown.';
+});
+
+angular.module('expanderModule', [])
+  .directive('expander', function(){
+    return {
+      restrict: 'EA',
+      replace: true,
+      transclude: true,
+      scope: { title:'=expanderTitle' },
+      template: '<div>' +
+          '<div class="title" ng-click="toggle()">{{title}}</div>' +
+          '<div class="body" ng-show="showMe" ng-transclude></div>' +
+        '</div>',
+      link: function(scope, element, attrs) {
+        scope.showMe = false;
+        scope.toggle = function toggle() {
+          scope.showMe = !scope.showMe;
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>
