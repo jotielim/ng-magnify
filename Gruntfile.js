@@ -60,13 +60,48 @@ module.exports = function (grunt) {
         watch: {
             files: '<%= jshint.all.src %>',
             tasks: ['test']
+        },
+        connect: {
+            options: {
+                port: 8000,
+                // Change this to '*' to access the server from outside.
+                hostname: 'localhost'
+                // livereload: 35729
+            },
+            livereload: {
+                options: {
+                    open: true,
+                    keepalive: true,
+                    base: [
+                        'examples',
+                        'bower_components',
+                        'src',
+                        'dist'
+                    ]
+                }
+            },
+            test: {
+                options: {
+                    port: 8001,
+                    base: [
+                        'test/'
+                    ]
+                }
+            },
+            dist: {
+                options: {
+                    base: 'dist/'
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-connect');
 
     grunt.registerTask('default', ['jshint', 'uglify']);
     grunt.registerTask('test', ['jshint']);
+    grunt.registerTask('serve', ['connect:livereload']);
 };
