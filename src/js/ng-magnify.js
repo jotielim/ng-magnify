@@ -1,4 +1,4 @@
-/*global angular*/
+/*global angular, DocumentTouch*/
 
 (function () {
     'use strict';
@@ -20,38 +20,45 @@
                 glassWidth: '=',
                 glassHeight: '='
             },
-            controller: function Ctrl ($scope) {
-
-            },
-            link: function (scope, element, attrs, Ctrl) {
+            link: function (scope, element, attrs) {
                 var glass = element.find('div'),
                     image = element.find('img'),
-                    nWidth, nHeight;
+                    el, nWidth, nHeight;
 
                 scope.getContainerStyle = function () {
                     return {
-                        width: scope.imageWidth + 'px',
-                        height: scope.imageHeight + 'px'
+                        width: (scope.imageWidth) ? scope.imageWidth + 'px' : '',
+                        height: (scope.imageHeight) ? scope.imageHeight + 'px' : ''
                     };
                 };
 
                 scope.getGlassStyle = function () {
                     return {
                         background: 'url(' + scope.imageSrc + ') no-repeat',
-                        width: scope.glassWidth + 'px',
-                        height: scope.glassHeight + 'px'
+                        width: (scope.glassWidth) ? scope.glassWidth + 'px' : '',
+                        height: (scope.glassHeight) ? scope.glassHeight + 'px' : ''
                     };
-                }
+                };
 
                 // if touch devices, do something
-                // if () {
-                // }
-                element.on('mousemove', function (evt) {
-                    scope.magnify(evt);
+                if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+                    return;
+                }
+                element.on('mouseenter', function () {
+                    el = angular.extend(getOffset(element[0]), {
+                        width: element[0].offsetWidth,
+                        height: element[0].offsetHeight
+                    });
+                })
+                .on('mousemove', function (evt) {
+                    glass.css( magnify(evt) );
+                })
+                .on('mouseout', function () {
+                    glass.css('display', 'none');
                 });
 
-                scope.magnify = function (evt) {
-                    var el, mx, my, rx, ry, px, py, bgp, img;
+                function magnify (evt) {
+                    var mx, my, rx, ry, px, py, bgp, img;
 
                     if (!nWidth && !nHeight) {
                         img = new Image();
@@ -61,15 +68,9 @@
                         };
                         img.src = scope.imageSrc;
                     } else {
-                        el = {
-                            left: element[0].offsetLeft,
-                            top: element[0].offsetTop,
-                            width: element[0].offsetWidth,
-                            height: element[0].offsetHeight
-                        };
-
-                        mx = evt.clientX - el.left;
-                        my = evt.clientY - el.top;
+                        // IE8 uses evt.x and evt.y
+                        mx = (evt.pageX) ? (evt.pageX - el.left) : evt.x;
+                        my = (evt.pageY) ? (evt.pageY - el.top) : evt.y;
 
                         if (mx < el.width && my < el.height && mx > 0 && my > 0) {
                             glass.css('display', 'block');
@@ -85,10 +86,29 @@
                         px = mx - glass[0].offsetWidth/2;
                         py = my - glass[0].offsetHeight/2;
 
-                        glass.css({ left: px+'px', top: py+'px', backgroundPosition: bgp });
+                        // glass.css({ left: px+'px', top: py+'px', backgroundPosition: bgp });
+                        return { left: px+'px', top: py+'px', backgroundPosition: bgp };
                     }
-                };
+                    return;
+                }
+
+                function getOffset (el) {
+                    var offsetLeft = 0,
+                        offsetTop = 0;
+
+                    do {
+                        if (!isNaN(el.offsetLeft)) {
+                            offsetLeft += el.offsetLeft;
+                            offsetTop += el.offsetTop;
+                        }
+                    } while (el = el.offsetParent);
+
+                    return {
+                        left: offsetLeft,
+                        top: offsetTop
+                    };
+                }
             }
-        }
+        };
     });
 })();

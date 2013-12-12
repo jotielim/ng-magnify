@@ -1,5 +1,5 @@
 {
-  "name": "ngmagnify",
+  "name": "ng-magnify",
   "version": "0.0.1",
   "description": "AngularJS directive for simple image magnification",
   "repository": {

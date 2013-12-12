@@ -1,7 +1,7 @@
 .magnify-container {
+    border: 1px solid #ccc;
     margin: auto;
     position: relative;
-    z-index: 9;
 }
     .magnify-container .magnify-glass {
         width: 200px;
@@ -21,7 +21,7 @@
         position: absolute;
         display: none;
         background-repeat: no-repeat;
-        z-index: 10;
+        z-index: 999;
     }
     .magnify-container .magnify-image {
         width: 100%;

@@ -1,21 +1,73 @@
 <!DOCTYPE html>
 <html data-ng-app="demoapp">
 <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEMO: ng-magnify</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/ng-magnify.css"/>
+  <style>
+  body {
+    position: relative;
+    padding-top: 50px;
+  }
+  #example2,
+  #example3,
+  #example4 {
+    width: 200px;
+  }
+  #example2 .magnify-glass {
+    width: 300px;
+    height: 300px;
+  }
+  </style>
 </head>
 <body>
-  <p>Demo app</p>
 
-  <div data-ng-controller="ExampleCtrl">
-    <div data-ng-magnify
-        data-image-width="400"
-        data-image-height="600"
-        data-glass-width="500"
-        data-glass-height="500"
-        data-image-src="img/nexus5.jpg"
-    ></div>
-  </div>
+  <header class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">Brand</a>
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">Examples</div>
+    </div>
 
+    <div class="row">
+      <div class="col-md-3">
+        <div data-ng-controller="ExampleCtrl">
+          <div id="example1" data-ng-magnify
+            data-image-width="200"
+            data-image-height="300"
+            data-glass-width="400"
+            data-glass-height="400"
+            data-image-src="img/nexus5.jpg"
+          ></div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div id="example2" data-ng-magnify image-src="img/nexus5.jpg"></div>
+      </div>
+      <div class="col-md-3">
+        <div id="example3" data-ng-magnify image-src="img/nexus5.jpg"></div>
+      </div>
+      <div class="col-md-3">
+        <div id="example4" data-ng-magnify image-src="img/nexus5.jpg"></div>
+      </div>
+    </div>
+
+  <!--
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+  -->
   <script src="angular/angular.min.js"></script>
   <script src="js/ng-magnify.js"></script>
   <script>
