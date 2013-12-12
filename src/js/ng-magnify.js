@@ -51,10 +51,14 @@
                     });
                 })
                 .on('mousemove', function (evt) {
-                    glass.css( magnify(evt) );
+                    if (magnify(evt)) {
+                        glass.css( magnify(evt) );
+                    }
                 })
                 .on('mouseout', function () {
-                    glass.css('display', 'none');
+                    glass.on('mouseleave', function () {
+                        glass.css('display', 'none');
+                    });
                 });
 
                 function magnify (evt) {
