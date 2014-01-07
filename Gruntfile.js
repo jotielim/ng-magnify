@@ -1,73 +1,54 @@
 module.exports = function (grunt) {
   'use strict';
 
+  // Load grunt tasks automatically
+  require('load-grunt-tasks')(grunt);
+
+  // Time how long tasks take. Can help when optimizing build times
+  require('time-grunt')(grunt);
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jsfiles: [
       'src/js/*.js',
       'Gruntfile.js',
-      '!*.min.js',
+      '!*.min.js'
     ],
-    jshint: {
-      options: {
-        curly: true,
-        eqeqeq: true,
-        forin: true,
-        immed: true,
-        latedef: true,
-        newcap: true,
-        noarg: true,
-        undef: true,
-        strict: true,
-        sub: true,
-        boss: true,
-        eqnull: true,
-        browser: true,
-        globals: {
-          define: true,
-          describe: true,
-          expect: true,
-          it: true,
-          module: true,
-          require: true,
-          requirejs: true
-        }
+
+    watch: {
+      js: {
+        files: ['src/js/*.js'],
+        tasks: ['newer:jshint:all']
       },
-      all: {
-        src: '<%= jsfiles %>'
-      }
-    },
-    uglify: {
-      options: {
-        banner: '/*!\n' +
-            // filesSrc is array, need to figure out to get current filename only
-            ' * <%= grunt.task.current.filesSrc %>\n' +
-            ' * <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-            ' */\n',
-        report: 'min'
+      jsTest: {
+        files: ['test/unit/*.js'],
+        tasks: ['newer:jshint:test', 'karma']
       },
-      build: {
+      styles: {
+        files: ['src/css/*.css'],
+        tasks: ['autoprefixer']
+      },
+      gruntfile: {
+        files: ['Gruntfile.js']
+      },
+      livereload: {
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        },
         files: [
-          {
-            expand: true,
-            cwd: '',
-            src: ['<%= jsfiles %>', '!Gruntfile.js'], // exclude Gruntfile.js
-            dest: '',
-            ext: '.min.js'
-          }
+          'examples/{,*/}*.html',
+          'examples/img/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          'src/css/(,*/}*.css'
         ]
       }
     },
-    watch: {
-      files: '<%= jshint.all.src %>',
-      tasks: ['test']
-    },
+
     connect: {
       options: {
-        port: 8000,
+        port: 9000,
         // Change this to '*' to access the server from outside.
-        hostname: 'localhost'
-        // livereload: 35729
+        hostname: 'localhost',
+        livereload: 35729
       },
       livereload: {
         options: {
@@ -76,15 +57,17 @@ module.exports = function (grunt) {
           base: [
             'examples',
             'bower_components',
-            'src',
-            'dist'
+            'src'
           ]
         }
       },
       test: {
         options: {
-          port: 8001,
+          port: 9001,
           base: [
+            'examples',
+            'bower_components',
+            'src',
             'test/'
           ]
         }
@@ -94,15 +77,104 @@ module.exports = function (grunt) {
           base: 'dist/'
         }
       }
+    },
+
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
+      },
+      all: [
+        'Gruntfile.js',
+        'src/{,*/}*.js'
+      ],
+      test: {
+        options: {
+          jshintrc: 'test/.jshintrc'
+        },
+        src: ['test/unit/{,*/}*.js', 'test/e2e/{,*/}.js']
+      }
+    },
+
+    autoprefixer: {
+      options: {
+        browsers: ['last 5 version', 'ie >= 8']
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: 'dist/css/',
+          src: '{,*/}*.css',
+          dest: 'dist/css/'
+        }]
+      }
+    },
+
+    // Allow the use of non-minsafe AngularJS files. Automatically makes it
+    // minsafe compatible so Uglify does not destroy the ng references
+    ngmin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: 'src/js/',
+          src: '{,*/}*.js',
+          dest: 'src/js/'
+        }]
+      }
+    },
+
+    cssmin: {
+      dist: {
+        files: {
+          'dist/css/ng-magnify.min.css': ['src/css/ng-magnify.css']
+        }
+      }
+    },
+
+    uglify: {
+      dist: {
+        files: {
+          'dist/js/ng-magnify.min.js': ['src/js/ng-magnify.js']
+        }
+      }
+    },
+
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js',
+        singleRun: true
+      }
+      /*
+      custom: {
+        configFile: 'karma.conf.js',
+        autoWatch: true,
+        singleRun: false
+      }
+      */
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.registerTask('serve', [
+    'autoprefixer',
+    'connect:livereload',
+    'watch'
+  ]);
 
-  grunt.registerTask('default', ['jshint', 'uglify']);
-  grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('serve', ['connect:livereload']);
+  grunt.registerTask('test', [
+    'autoprefixer',
+    'connect:test',
+    'karma'
+  ]);
+
+  grunt.registerTask('build', [
+    'autoprefixer',
+    'cssmin',
+    'uglify'
+  ]);
+
+  grunt.registerTask('default', [
+    'newer:jshint',
+    'test',
+    'build'
+  ]);
 };

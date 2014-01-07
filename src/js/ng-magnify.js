@@ -20,48 +20,42 @@
         glassWidth: '=',
         glassHeight: '='
       },
-      link: function (scope, element, attrs) {
+      link: function (scope, element) {
         var glass = element.find('div'),
           image = element.find('img'),
-          el, nWidth, nHeight;
-
-        scope.getContainerStyle = function () {
-          return {
-            width: (scope.imageWidth) ? scope.imageWidth + 'px' : '',
-            height: (scope.imageHeight) ? scope.imageHeight + 'px' : ''
-          };
-        };
-
-        scope.getGlassStyle = function () {
-          return {
-            background: 'url(' + scope.imageSrc + ') no-repeat',
-            width: (scope.glassWidth) ? scope.glassWidth + 'px' : '',
-            height: (scope.glassHeight) ? scope.glassHeight + 'px' : ''
-          };
-        };
+          el, nWidth, nHeight, magnifyCSS;
 
         // if touch devices, do something
         if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
           return;
         }
         element.on('mouseenter', function () {
-          el = angular.extend(getOffset(element[0]), {
+          el = angular.extend(scope.getOffset(element[0]), {
             width: element[0].offsetWidth,
-            height: element[0].offsetHeight
+            height: element[0].offsetHeight,
+            imageWidth: image[0].offsetWidth,
+            imageHeight: image[0].offsetHeight,
+            glassWidth: glass[0].offsetWidth,
+            glassHeight: glass[0].offsetHeight
           });
         })
         .on('mousemove', function (evt) {
-          if (magnify(evt)) {
-            glass.css( magnify(evt) );
+          magnifyCSS = scope.magnify(evt);
+
+          if (magnifyCSS) {
+            glass.css( magnifyCSS );
           }
         })
         .on('mouseout', function () {
           glass.on('mouseleave', function () {
-            glass.css('display', 'none');
+            glass.css({
+              opacity: 0,
+              filter: 'alpha(opacity=0)'
+            });
           });
         });
 
-        function magnify (evt) {
+        scope.magnify = function (evt) {
           var mx, my, rx, ry, px, py, bgp, img;
 
           if (!nWidth && !nHeight) {
@@ -77,41 +71,62 @@
             my = (evt.pageY) ? (evt.pageY - el.top) : evt.y;
 
             if (mx < el.width && my < el.height && mx > 0 && my > 0) {
-              glass.css('display', 'block');
+              glass.css({
+                opacity: 1,
+                filter: 'alpha(opacity=100)'
+              });
             } else {
-              glass.css('display', 'none');
+              glass.css({
+                opacity: 0,
+                filter: 'alpha(opacity=0)'
+              });
               return;
             }
 
-            rx = Math.round(mx/image[0].offsetWidth*nWidth - glass[0].offsetWidth/2)*-1;
-            ry = Math.round(my/image[0].offsetHeight*nHeight - glass[0].offsetHeight/2)*-1;
+            rx = Math.round(mx/el.imageWidth*nWidth - el.glassWidth/2)*-1;
+            ry = Math.round(my/el.imageHeight*nHeight - el.glassHeight/2)*-1;
             bgp = rx + 'px ' + ry + 'px';
 
-            px = mx - glass[0].offsetWidth/2;
-            py = my - glass[0].offsetHeight/2;
+            px = mx - el.glassWidth/2;
+            py = my - el.glassHeight/2;
 
-            // glass.css({ left: px+'px', top: py+'px', backgroundPosition: bgp });
             return { left: px+'px', top: py+'px', backgroundPosition: bgp };
           }
           return;
-        }
+        };
 
-        function getOffset (el) {
+        scope.getOffset = function (el) {
           var offsetLeft = 0,
             offsetTop = 0;
 
-          do {
+          while (el) {
             if (!isNaN(el.offsetLeft)) {
               offsetLeft += el.offsetLeft;
               offsetTop += el.offsetTop;
             }
-          } while (el = el.offsetParent);
+            el = el.offsetParent;
+          }
 
           return {
             left: offsetLeft,
             top: offsetTop
           };
-        }
+        };
+
+        scope.getContainerStyle = function () {
+          return {
+            width: (scope.imageWidth) ? scope.imageWidth + 'px' : '',
+            height: (scope.imageHeight) ? scope.imageHeight + 'px' : ''
+          };
+        };
+
+        scope.getGlassStyle = function () {
+          return {
+            background: 'url(' + scope.imageSrc + ') no-repeat',
+            width: (scope.glassWidth) ? scope.glassWidth + 'px' : '',
+            height: (scope.glassHeight) ? scope.glassHeight + 'px' : ''
+          };
+        };
       }
     };
   });
