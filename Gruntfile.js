@@ -53,7 +53,6 @@ module.exports = function (grunt) {
       livereload: {
         options: {
           open: true,
-          keepalive: true,
           base: [
             'examples',
             'bower_components',
@@ -94,6 +93,20 @@ module.exports = function (grunt) {
         },
         src: ['test/unit/{,*/}*.js', 'test/e2e/{,*/}.js']
       }
+    },
+
+    clean: {
+      dist: {
+        files: [{
+          dot: true,
+          src: [
+            '.tmp',
+            'dist/css/',
+            'dist/js/'
+          ]
+        }]
+      },
+      server: '.tmp'
     },
 
     autoprefixer: {
@@ -167,6 +180,7 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'clean:dist',
     'autoprefixer',
     'cssmin',
     'uglify'
