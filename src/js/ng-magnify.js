@@ -73,11 +73,13 @@
             if (mx < el.width && my < el.height && mx > 0 && my > 0) {
               glass.css({
                 opacity: 1,
+                'z-index': 1,
                 filter: 'alpha(opacity=100)'
               });
             } else {
               glass.css({
                 opacity: 0,
+                'z-index': -1,
                 filter: 'alpha(opacity=0)'
               });
               return;
