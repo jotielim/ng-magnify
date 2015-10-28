@@ -29,7 +29,7 @@
         if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
           return;
         }
-        element.on('mouseenter', function () {
+        element.on('mousemove', function (evt) {
           el = angular.extend(scope.getOffset(element[0]), {
             width: element[0].offsetWidth,
             height: element[0].offsetHeight,
@@ -38,8 +38,6 @@
             glassWidth: glass[0].offsetWidth,
             glassHeight: glass[0].offsetHeight
           });
-        })
-        .on('mousemove', function (evt) {
           magnifyCSS = scope.magnify(evt);
 
           if (magnifyCSS) {
@@ -97,22 +95,12 @@
           return;
         };
 
-        scope.getOffset = function (el) {
-          var offsetLeft = 0,
-            offsetTop = 0;
-
-          while (el) {
-            if (!isNaN(el.offsetLeft)) {
-              offsetLeft += el.offsetLeft;
-              offsetTop += el.offsetTop;
-            }
-            el = el.offsetParent;
-          }
-
-          return {
-            left: offsetLeft,
-            top: offsetTop
-          };
+        scope.getOffset = function (_el) {
+          var de = document.documentElement;
+          var box = _el.getBoundingClientRect();
+          var top = box.top + window.pageYOffset - de.clientTop;
+          var left = box.left + window.pageXOffset - de.clientLeft;
+          return { top: top, left: left };
         };
 
         scope.getContainerStyle = function () {
