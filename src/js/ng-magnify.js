@@ -29,7 +29,7 @@
         if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
           return;
         }
-        element.on('mouseenter', function () {
+        element.on('mousemove', function (evt) {
           el = angular.extend(scope.getOffset(element[0]), {
             width: element[0].offsetWidth,
             height: element[0].offsetHeight,
@@ -38,8 +38,6 @@
             glassWidth: glass[0].offsetWidth,
             glassHeight: glass[0].offsetHeight
           });
-        })
-        .on('mousemove', function (evt) {
           magnifyCSS = scope.magnify(evt);
 
           if (magnifyCSS) {
