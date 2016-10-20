@@ -112,7 +112,7 @@
 
         scope.getGlassStyle = function () {
           return {
-            background: 'url(' + scope.imageSrc + ') no-repeat',
+            background: 'url("' + scope.imageSrc + '") no-repeat',
             width: (scope.glassWidth) ? scope.glassWidth + 'px' : '',
             height: (scope.glassHeight) ? scope.glassHeight + 'px' : ''
           };
